@@ -1,0 +1,452 @@
+# ============================================================================
+# FRONTEND: templates/index.html
+# ============================================================================
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Form Filler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #555;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .form-group input.filled {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 50px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .skills-container.filled {
+            border-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .skill-tag {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-start {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-stop {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-stop:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .status-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.listening {
+            background: #10b981;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e0e0e0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .transcript-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+
+        .transcript-line {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .transcript-line span {
+            color: #667eea;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Voice Form Filler</h1>
+            <p>Speak naturally and watch the form fill automatically using AI</p>
+        </div>
+
+        <div class="status-indicator">
+            <div class="status-dot" id="statusDot"></div>
+            <span id="statusText">Ready to start</span>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-start" id="startBtn" onclick="startListening()">
+                <span>▶</span> Start Listening
+            </button>
+            <button class="btn btn-stop" id="stopBtn" onclick="stopListening()" disabled>
+                <span>⏸</span> Stop Listening
+            </button>
+            <button class="btn btn-reset" onclick="resetForm()">
+                <span>🔄</span> Reset
+            </button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%">0%</div>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>📋 Form Data</h2>
+                <div class="form-group">
+                    <label>👤 Name</label>
+                    <input type="text" id="name" placeholder="Waiting for input..." readonly>
+                </div>
+                <div class="form-group">
+                    <label>📅 Age</label>
+                    <input type="text" id="age" placeholder="Waiting for input..." readonly>
+                </div>
+                <div class="form-group">
+                    <label>📍 City</label>
+                    <input type="text" id="city" placeholder="Waiting for input..." readonly>
+                </div>
+                <div class="form-group">
+                    <label>🎓 College Year</label>
+                    <input type="text" id="collegeYear" placeholder="Waiting for input..." readonly>
+                </div>
+                <div class="form-group">
+                    <label>🏫 College Name</label>
+                    <input type="text" id="collegeName" placeholder="Waiting for input..." readonly>
+                </div>
+                <div class="form-group">
+                    <label>💻 Skills</label>
+                    <div class="skills-container" id="skillsContainer">
+                        <div class="empty-state" style="width: 100%;">No skills detected yet</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📝 Live Transcript</h2>
+                <div class="transcript-container" id="transcript">
+                    <div class="empty-state">Start speaking to see transcript...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let updateInterval;
+
+        async function startListening() {
+            try {
+                await fetch('http://localhost:5000/start', { method: 'POST' });
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+                document.getElementById('statusDot').classList.add('listening');
+                document.getElementById('statusText').textContent = 'Listening...';
+
+                updateInterval = setInterval(updateStatus, 500);
+            } catch (error) {
+                alert('Error: Make sure the Python backend is running!');
+            }
+        }
+
+        async function stopListening() {
+            try {
+                await fetch('http://localhost:5000/stop', { method: 'POST' });
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+                document.getElementById('statusDot').classList.remove('listening');
+                document.getElementById('statusText').textContent = 'Stopped';
+
+                clearInterval(updateInterval);
+            } catch (error) {
+                console.error('Error stopping:', error);
+            }
+        }
+
+        async function resetForm() {
+            try {
+                await fetch('http://localhost:5000/reset', { method: 'POST' });
+                updateStatus();
+            } catch (error) {
+                console.error('Error resetting:', error);
+            }
+        }
+
+        async function updateStatus() {
+            try {
+                const response = await fetch('http://localhost:5000/status');
+                const data = await response.json();
+
+                // Update form fields
+                const fields = ['name', 'age', 'city', 'collegeYear', 'collegeName'];
+                fields.forEach(field => {
+                    const element = document.getElementById(field);
+                    const value = data.form_data[field === 'collegeYear' ? 'college_year' : field === 'collegeName' ? 'college_name' : field];
+                    element.value = value || '';
+                    if (value) {
+                        element.classList.add('filled');
+                    } else {
+                        element.classList.remove('filled');
+                    }
+                });
+
+                // Update skills
+                const skillsContainer = document.getElementById('skillsContainer');
+                if (data.form_data.skills && data.form_data.skills.length > 0) {
+                    skillsContainer.innerHTML = data.form_data.skills.map(skill => 
+                        `<div class="skill-tag">${skill}</div>`
+                    ).join('');
+                    skillsContainer.classList.add('filled');
+                } else {
+                    skillsContainer.innerHTML = '<div class="empty-state" style="width: 100%;">No skills detected yet</div>';
+                    skillsContainer.classList.remove('filled');
+                }
+
+                // Update progress
+                const filledFields = fields.filter(f => {
+                    const key = f === 'collegeYear' ? 'college_year' : f === 'collegeName' ? 'college_name' : f;
+                    return data.form_data[key];
+                }).length + (data.form_data.skills.length > 0 ? 1 : 0);
+                const progress = (filledFields / 6) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+                document.getElementById('progressBar').textContent = Math.round(progress) + '%';
+
+                // Update transcript
+                const transcriptDiv = document.getElementById('transcript');
+                if (data.transcript && data.transcript.length > 0) {
+                    transcriptDiv.innerHTML = data.transcript.map((line, i) => 
+                        `<div class="transcript-line"><span>${i + 1}.</span>${line}</div>`
+                    ).join('');
+                    transcriptDiv.scrollTop = transcriptDiv.scrollHeight;
+                } else {
+                    transcriptDiv.innerHTML = '<div class="empty-state">Start speaking to see transcript...</div>';
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+            }
+        }
+
+        // Initial update
+        updateStatus();
+    </script>
+</body>
+</html>
